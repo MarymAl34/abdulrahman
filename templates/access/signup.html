@@ -1,0 +1,162 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>إنشاء حساب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#f8fbfc; --card:#fff; --fg:#0f172a; --muted:#6b7280; --accent:#10b981;
+      --ring:#93c5fd; --line:#e5e7eb; --err:#fef2f2; --errb:#dc2626;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,"Segoe UI",Tahoma,Arial;
+      color:var(--fg); background:var(--bg);
+      display:flex; flex-direction:column;
+    }
+    .decor{height:26vh; min-height:150px; background:
+      radial-gradient(90rem 24rem at 10% 10%, rgba(98,165,218,.08), transparent 60%),
+      radial-gradient(90rem 24rem at 90% 10%, rgba(92,181,146,.08), transparent 60%),
+      linear-gradient(0deg, #f8fbfc 0%, #ffffff 100%);
+      position:relative; overflow:hidden;}
+    .decor:before{content:""; position:absolute; inset:-40% -10% auto -10%; height:200%;
+      background:
+        repeating-linear-gradient(135deg, #cbd5e180 0 2px, transparent 2px 28px),
+        repeating-linear-gradient(225deg, #d1fae580 0 2px, transparent 2px 32px);
+      opacity:.35; mix-blend-mode:multiply;}
+    .wrap{flex:1; display:flex; align-items:flex-start; justify-content:center}
+    .content{width:100%; max-width:880px; margin:-64px 16px 40px}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.06); padding:28px;
+      display:grid; gap:22px; grid-template-columns:1fr;
+      overflow:visible; /* تأكيد عدم قصّ العناصر الداخلية */
+    }
+    @media(min-width:900px){.card{grid-template-columns:1.1fr .9fr; padding:36px 40px}}
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #a7f3d0;background:#ecfdf5;color:#065f46;font-size:12px}
+    h1{margin:8px 0 6px;font-size:clamp(22px,3.4vw,30px)}
+    p.lead{margin:0;color:var(--muted)}
+    .about{align-self:center}
+    .about ul{margin:10px 0 0; padding-inline-start:18px; color:#4b5563; line-height:1.9}
+    .field{margin-bottom:14px}
+    label{display:block;font-size:14px;margin:0 0 6px}
+    .input-wrap{
+      position:relative;
+      overflow:visible;          /* يمنع قص الحواف العلوية */
+    }
+    .icon{
+      position:absolute; right:12px; top:50%; transform:translateY(-50%);
+      width:18px; height:18px; opacity:.6; pointer-events:none;
+    }
+    input{
+      display:block;
+      width:100%;
+      padding:14px 44px 14px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      background-clip:padding-box; /* يضمن انحناء الحواف */
+      font-size:15px;
+      line-height:1.4;
+      height:auto;
+      outline:none;
+      transition:border-color .15s, box-shadow .15s;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    input:focus{border-color:var(--ring); box-shadow:0 0 0 3px rgba(147,197,253,.35)}
+    .ltr{direction:ltr; text-align:left}
+    .hint{font-size:12px;color:#9ca3af;margin-top:6px}
+    .error{color:var(--errb); font-size:12px; margin-top:4px; background:var(--err); padding:4px 8px; border-radius:6px}
+    .btn{
+      display:inline-block; width:100%; padding:13px 16px; border-radius:12px; border:1px solid var(--accent);
+      background:linear-gradient(180deg,#34d399,#10b981); color:#fff; font-weight:700; cursor:pointer;
+    }
+    .toggle-eye{position:absolute; left:10px; top:50%; transform:translateY(-50%); background:transparent; border:0; cursor:pointer; padding:4px; opacity:.7;}
+    .links{margin-top:12px; text-align:center; font-size:14px; color:var(--muted);}
+    .links a{color:var(--accent); font-weight:600; text-decoration:none}
+    .links a:hover{text-decoration:underline}
+    .messages{margin-bottom:10px;}
+    .messages .msg{padding:8px 12px; border-radius:8px; font-size:14px; margin-bottom:6px;}
+    .messages .error{background:var(--err); color:var(--errb);}
+    .messages .success{background:#ecfdf5; color:#065f46;}
+  </style>
+</head>
+<body>
+  <section class="decor"></section>
+  <div class="wrap">
+    <div class="content">
+      <div class="card">
+        <div class="about">
+          <span class="badge">منصّة الكهرباء والمياه</span>
+          <h1>إنشاء حساب جديد</h1>
+          <p class="lead">سجّل برقم الجوال والهوية، ثم أكمل بياناتك لاحقًا داخل المنصّة.</p>
+          <ul>
+            <li>تأكيد بسيط على رقم الجوال لاحقًا (OTP).</li>
+            <li>بياناتك آمنة وتُستخدم لتقديم الخدمات فقط.</li>
+          </ul>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="field">
+            <label for="phone">رقم الجوال</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h10V4H7zm5 14a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5z"/></svg>
+              <input class="ltr" id="phone" name="phone" type="tel" inputmode="numeric" pattern="^\d{9,15}$"
+                     placeholder="0551234567" required value="{{ request.POST.phone|default:'' }}">
+            </div>
+            <div class="hint">أدخل أرقام فقط (9–15 رقم).</div>
+          </div>
+
+          <div class="field">
+            <label for="nid">رقم الهوية</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6H3V5zm0 8h18v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4zm5 3h8v1H8v-1z"/></svg>
+              <input class="ltr" id="nid" name="national_id" type="text" inputmode="numeric" pattern="^\d{10}$"
+                     placeholder="1234567890" required value="{{ request.POST.national_id|default:'' }}">
+            </div>
+            <div class="hint">رقم هوية من 10 أرقام.</div>
+          </div>
+
+          <div class="field">
+            <label for="pw">كلمة المرور</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8V7a5 5 0 1 0-10 0v1H5v14h14V8h-2zm-8 0V7a3 3 0 1 1 6 0v1H9z"/></svg>
+              <input id="pw" name="password" type="password" minlength="8" placeholder="على الأقل 8 أحرف/أرقام"
+                     required value="{{ request.POST.password|default:'' }}">
+              <button type="button" class="toggle-eye" aria-label="إظهار/إخفاء كلمة المرور" onclick="togglePw()">👁</button>
+            </div>
+            <div class="hint">استخدم كلمة قوية.</div>
+          </div>
+
+          <button class="btn" type="submit">إنشاء الحساب</button>
+
+          <div class="links">
+            لديك حساب بالفعل؟ <a href="{% url 'access:login' %}">تسجيل الدخول</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePw(){
+      const pw = document.getElementById('pw');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>

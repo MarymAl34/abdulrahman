@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>الرئيسية | منصة الكهرباء والمياه</title>
+
+  <!-- CSS خاص بالرئيسية فقط -->
+  <style>
+    :root{
+      --primary:#16a34a;
+      --primary-700:#15803d;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --bg:#f8fafc;
+    }
+    body{margin:0; font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Tajawal", Arial, sans-serif; color:var(--text); background:#ffffff}
+    .page{display:flex; flex-direction:column; min-height:100dvh}
+    main{flex:1}
+
+    /* Hero */
+    .hero{
+      background:
+        radial-gradient(1200px 600px at 80% -100px, rgba(22,163,74,.12), transparent 60%),
+        radial-gradient(1000px 600px at 0% -120px, rgba(34,197,94,.15), transparent 60%),
+        linear-gradient(180deg, #ffffff 0%, #f6fff9 55%, #ffffff 100%);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:1200px; margin:auto; padding:40px 16px}
+    .hero h1{margin:0 0 10px; font-size:clamp(26px, 4vw, 40px); font-weight:900}
+    .hero p{margin:0; color:var(--muted); font-size:clamp(14px, 2.3vw, 18px)}
+    .actions{margin-top:18px; display:flex; gap:10px; flex-wrap:wrap}
+
+    .search-card{
+      margin-top:22px; background:#fff; border:1px solid var(--border); border-radius:16px; padding:14px;
+      display:grid; gap:10px;
+      box-shadow: 0 8px 22px rgba(2, 6, 23, 0.06);
+    }
+    .search-grid{display:grid; grid-template-columns:1fr 1fr auto; gap:10px}
+    .input{
+      width:100%; border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:16px;
+    }
+    .btn{
+      appearance:none; border:1px solid var(--primary); background:var(--primary); color:#fff;
+      border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
+      box-shadow: 0 8px 16px rgba(22,163,74,.2);
+    }
+    .btn:hover{filter:brightness(.98)}
+    .btn--ghost{background:#fff; color:var(--primary-700); border-color:var(--border)}
+
+    /* Cards */
+    .cards{display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:22px}
+    .card{
+      border:1px solid var(--border); border-radius:16px; padding:16px; background:#fff;
+      transition:transform .08s ease, box-shadow .2s ease; cursor:pointer;
+    }
+    .card:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(2,6,23,.06)}
+    .card h3{margin:0 0 8px; font-size:18px}
+    .card p{margin:0; color:var(--muted); font-size:14px; line-height:1.9}
+
+    /* Steps */
+    .steps{margin-top:26px; background:#fff; border:1px solid var(--border); border-radius:16px; padding:16px}
+    .steps ol{margin:0; padding:0 18px; color:#0f172a; line-height:2}
+
+    @media (max-width:1100px){ .cards{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:880px){
+      .search-grid{grid-template-columns:1fr; gap:8px}
+      .cards{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:560px){ .cards{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="page">
+    {% include 'header.html' %}
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div class="wrap">
+          <h1>كل خدمات الكهرباء والمياه في مكان واحد</h1>
+          <p>لـ <b>الملاك</b> و<b>المستفيدين</b>: نقل عدادات، تسديد المديونيات، توثيق الحسابات، متابعة الفواتير والبلاغات.</p>
+
+          <div class="actions">
+            <a class="btn" href="{% url 'services' %}">استعراض الخدمات</a>
+            <a class="btn btn--ghost" href="{% url 'owners' %}">خدمات الملاك</a>
+            <a class="btn btn--ghost" href="{% url 'beneficiaries' %}">خدمات المستفيدين</a>
+          </div>
+
+          <!-- بطاقة البحث السريع -->
+          <form class="search-card" action="{% url 'lookup' %}" method="get" autocomplete="on">
+            <div class="search-grid">
+              <input class="input" type="text" name="meter" placeholder="رقم العداد" inputmode="numeric" />
+              <input class="input" type="text" name="account" placeholder="رقم الحساب" inputmode="numeric" />
+              <button class="btn" type="submit">استعلام فوري</button>
+            </div>
+            <small style="color:#64748b">يمكنك إدخال أحدهما فقط.</small>
+          </form>
+
+          <!-- بطاقات مختصرة -->
+          <div class="cards">
+            <a class="card" href="{% url 'transfer_meter' %}">
+              <h3>طلب نقل عداد</h3>
+              <p>نقل عداد الكهرباء أو المياه لعقار جديد بسهولة.</p>
+            </a>
+            <a class="card" href="{% url 'pay_dues' %}">
+              <h3>تسديد المديونيات</h3>
+              <p>سداد آمن وسريع مع إيصال فوري.</p>
+            </a>
+            <a class="card" href="{% url 'verify_property' %}">
+              <h3>توثيق المعلومات العقارية</h3>
+              <p>ربط العدادات بالعقار والتحقق من الملكية.</p>
+            </a>
+            <a class="card" href="{% url 'report_issue' %}">
+              <h3>تقديم بلاغ</h3>
+              <p>أبلغ عن أعطال أو تسربات، وسيتم متابعتها.</p>
+            </a>
+          </div>
+
+          <!-- خطوات مبسطة -->
+          <div class="steps">
+            <h3 style="margin:0 0 10px">كيف تبدأ؟</h3>
+            <ol>
+              <li>سجّل دخولك أو أنشئ حسابًا.</li>
+              <li>اختر الخدمة (مالك أو مستفيد).</li>
+              <li>أدخل رقم العداد أو الحساب للتحقق.</li>
+              <li>أكمل الطلب وتابع الحالة من لوحة التحكم.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    {% include 'footer.html' %}
+  </div>
+</body>
+</html>

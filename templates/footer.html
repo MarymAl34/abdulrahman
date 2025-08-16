@@ -1,0 +1,68 @@
+<!-- ====== FOOTER (Bottom Bar) ====== -->
+<footer class="site-footer" dir="rtl" id="contact">
+  <style>
+    .site-footer{
+      background: linear-gradient(180deg, #ffffff 0%, #f6fff9 60%);
+      border-top:1px solid #e2e8f0;
+      color:#0f172a;
+    }
+    .f-container{max-width:1200px; margin:auto; padding: 36px 16px;}
+    .f-grid{
+      display:grid; grid-template-columns: 2fr 1fr 1fr; gap:22px;
+    }
+    .f-title{font-weight:800; margin:0 0 10px}
+    .f-text{color:#475569; line-height:1.9; margin:0}
+    .f-links{list-style:none; padding:0; margin:0; display:grid; gap:8px}
+    .f-links a{color:#0f172a; text-decoration:none}
+    .f-links a:hover{color:#16a34a}
+    .contact-card{
+      border:1px solid #e2e8f0; border-radius:14px; padding:14px; background:#fff
+    }
+    .f-bottom{
+      border-top:1px solid #e2e8f0; margin-top:24px; padding:14px 0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; background:#e7f9ee; color:#15803d; font-weight:700; border:1px solid #bbf7d0;
+    }
+    @media (max-width:880px){ .f-grid{grid-template-columns:1fr} }
+  </style>
+
+  <div class="f-container">
+    <div class="f-grid">
+      <div>
+        <h3 class="f-title">منصة الكهرباء والمياه</h3>
+        <p class="f-text">
+          منصة موحدة تُسهل على <b>الملاك</b> و<b>المستفيدين</b> إدارة خدمات العدادات، الفواتير، البلاغات، وتحديث البيانات في مكان واحد.
+        </p>
+        <p class="badge">آمنة • موثوقة • سريعة</p>
+      </div>
+
+      <div>
+        <h4 class="f-title">روابط سريعة</h4>
+        <ul class="f-links">
+          <li><a href="{% url 'owners' %}">خدمات الملاك</a></li>
+          <li><a href="{% url 'beneficiaries' %}">خدمات المستفيدين</a></li>
+          <li><a href="{% url 'services' %}">كل الخدمات</a></li>
+          <li><a href="{% url 'support' %}">الدعم والمساعدة</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="f-title">تواصل معنا</h4>
+        <div class="contact-card">
+          <p class="f-text">البريد: support@example.com</p>
+          <p class="f-text">الهاتف: 0500000000</p>
+          <p class="f-text">الرياض، المملكة العربية السعودية</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="f-bottom">
+      <p class="f-text">© {{ now|date:"Y" }} جميع الحقوق محفوظة.</p>
+      <div class="f-links" style="display:flex; gap:14px">
+        <a href="{% url 'privacy' %}">سياسة الخصوصية</a>
+        <a href="{% url 'terms' %}">الشروط والأحكام</a>
+      </div>
+    </div>
+  </div>
+</footer>

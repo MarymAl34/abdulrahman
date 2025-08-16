@@ -1,9 +1,13 @@
+# lookup/urls.py
 from django.urls import path
-from django.views.generic import TemplateView
+from . import views
 
 app_name = 'lookup'
 
 urlpatterns = [
-    # صفحة رئيسية تجريبية لتطبيق lookup
-    path('', TemplateView.as_view(template_name='lookup/lookup_home.html'), name='home'),
+    # الصفحة الرئيسية للاستعلام عن البيانات
+    path('', views.data_lookup_view, name='home'),
+
+    # صفحة عرض سجل الاستدعاءات
+    path('history/', views.lookup_history_view, name='history'),
 ]

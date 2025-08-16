@@ -48,7 +48,7 @@ ROOT_URLCONF = 'myprojabd.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # مجلد القوالب العام (اختياري لكن مفيد)
+        # مجلد القوالب العام
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -86,9 +86,9 @@ TIME_ZONE = 'Asia/Riyadh'           # توقيت الرياض
 USE_I18N = True
 USE_TZ = True
 
-# اللغات المتاحة (حاليًا عربية فقط – أضف إنجليزي إذا احتجت)
+# اللغات المتاحة
 LANGUAGES = [
-    ('ar', _('Arabic')),
+    ('ar', _('العربيّة')),
     # ('en', _('English')),
 ]
 
@@ -98,11 +98,13 @@ LOCALE_PATHS = [
 ]
 
 # الملفات الثابتة
-STATIC_URL = 'static/'
-# (اختياري) مجلد التجميع للإنتاج باستخدام collectstatic
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-# (اختياري) مجلدات ثابتة إضافية أثناء التطوير
-# STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']   # مجلد الملفات الثابتة أثناء التطوير
+STATIC_ROOT = BASE_DIR / 'staticfiles'     # للإنتاج وعند استخدام collectstatic
+
+# ملفات الوسائط (الملفات المرفوعة من المستخدمين)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # الإعداد الافتراضي لمفاتيح الحقول
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>التحقق برمز OTP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#f8fbfc; --card:#fff; --fg:#0f172a; --muted:#6b7280; --accent:#10b981;
+      --ring:#93c5fd; --line:#e5e7eb; --err:#fef2f2; --errb:#dc2626;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,Arial;background:var(--bg);color:var(--fg)}
+    /* تمركز الكرت تمامًا في المنتصف */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);
+          border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:22px}
+    h1{margin:0 0 10px;font-size:22px}
+    p{margin:0 0 14px;color:var(--muted)}
+    label{display:block;font-size:14px;margin:0 0 6px}
+    /* حقل OTP مضبوط المنتصف واتجاه LTR لتجنب الميلان في RTL */
+    .otp{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:20px;
+         text-align:center;direction:ltr;letter-spacing:6px; /* توزيع نظيف للأرقام */
+         background:#fff;outline:none;transition:border-color .15s, box-shadow .15s}
+    .otp:focus{border-color:var(--ring);box-shadow:0 0 0 3px rgba(147,197,253,.35)}
+    .btn{width:100%;margin-top:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--accent);
+         background:linear-gradient(180deg,#34d399,#10b981);color:#fff;font-weight:700;cursor:pointer}
+    form.resend{margin-top:10px;text-align:center}
+    form.resend button{background:none;border:0;color:#2563eb;cursor:pointer}
+    /* رسائل Django */
+    .msgs{list-style:none;margin:0 0 12px;padding:0}
+    .msgs li{padding:10px 12px;border:1px solid #fde68a;background:#fffbeb;border-radius:10px;margin-bottom:8px}
+    .msgs li.error{border-color:#fecaca;background:var(--err);color:var(--errb)}
+    .phone{direction:ltr; unicode-bidi:plaintext}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>التحقق برمز OTP</h1>
+      <p>أدخل الرمز المكوّن من 6 أرقام المرسَل إلى جوالك:
+        <strong class="phone">{{ phone }}</strong>
+      </p>
+
+      {% if messages %}
+        <ul class="msgs">
+          {% for m in messages %}
+            <li class="{{ m.tags }}">{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <label for="code">رمز التحقق</label>
+        <input id="code" name="code" class="otp" inputmode="numeric" pattern="^\d{6}$"
+               maxlength="6" autocomplete="one-time-code" placeholder="••••••" required>
+        <button class="btn" type="submit">تحقّق</button>
+      </form>
+
+      <form class="resend" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="resend" value="1">
+        <button type="submit">إعادة إرسال الرمز</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

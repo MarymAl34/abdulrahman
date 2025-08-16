@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>سجل الاستدعاءات</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{--bg:#f8fbfc;--card:#fff;--fg:#0f172a;--muted:#6b7280;--accent:#10b981;--accent2:#34d399;--line:#e5e7eb}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,Arial;background:var(--bg);color:var(--fg)}
+    .wrap{max-width:1000px;margin:32px auto;padding:0 16px}
+    h1{margin:0 0 12px;color:var(--accent)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:16px}
+    form.filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+    input,select{padding:10px 12px;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-top:1px solid var(--line);text-align:right;font-size:14px}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:12px}
+    .btn{padding:10px 14px;border-radius:12px;border:1px solid var(--accent);background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;cursor:pointer}
+    .pager{display:flex;gap:8px;justify-content:center;margin-top:12px}
+    .pager a{padding:6px 10px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:inherit}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>سجل الاستدعاءات</h1>
+    <div class="card">
+      <form class="filters" method="get">
+        <input type="text" name="q" placeholder="بحث..." value="{{ q|default:'' }}">
+        <select name="type">
+          <option value="">كل الأنواع</option>
+          {% for val,label in types %}
+            <option value="{{ val }}" {% if t == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select name="found">
+          <option value="">كل النتائج</option>
+          <option value="1" {% if r == "1" %}selected{% endif %}>تم العثور</option>
+          <option value="0" {% if r == "0" %}selected{% endif %}>لم يتم العثور</option>
+        </select>
+        <button class="btn" type="submit">تصفية</button>
+      </form>
+
+      <div class="muted" style="margin-bottom:8px">
+        إجمالي الصفحة: {{ page_obj.object_list|length }} من {{ page_obj.paginator.count }}
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>الوقت</th>
+            <th>المعرف</th>
+            <th>القيمة</th>
+            <th>الاسم</th>
+            <th>النتيجة</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in page_obj %}
+            <tr>
+              <td>{{ row.timestamp|date:"Y-m-d H:i" }}</td>
+              <td><span class="pill">{{ row.get_query_type_display }}</span></td>
+              <td dir="ltr">{{ row.masked_value }}</td>
+              <td>{{ row.full_name|default:"-" }}</td>
+              <td>{{ row.result_found|yesno:"تم,لم يتم" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="muted">لا توجد سجلات.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pager">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&type={{ t }}&found={{ r }}">السابق</a>
+        {% endif %}
+        <span class="muted">صفحة {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&type={{ t }}&found={{ r }}">التالي</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

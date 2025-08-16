@@ -1,0 +1,117 @@
+<!-- ====== HEADER (Top Bar) ====== -->
+<header class="topbar" dir="rtl">
+  <style>
+    :root{
+      --primary:#16a34a; /* أخضر */
+      --primary-600:#16a34a;
+      --primary-700:#15803d;
+      --surface:#ffffff; /* أبيض */
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+    }
+    .topbar{
+      position: sticky; top:0; inset-inline:0;
+      background: var(--surface);
+      border-bottom:1px solid var(--border);
+      z-index: 50;
+    }
+    .container{
+      max-width:1200px; margin:auto; padding: 0 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px; height:64px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; color:var(--text); text-decoration:none}
+    .brand .logo{
+      width:36px;height:36px;border-radius:10px; display:grid; place-items:center;
+      background: conic-gradient(from 180deg at 50% 50%, #22c55e, #16a34a, #0ea5a1, #22c55e);
+      color:#fff; font-weight:900;
+      box-shadow: 0 6px 14px rgba(22,163,74,.25);
+    }
+    nav ul{display:flex; align-items:center; gap:14px; list-style:none; margin:0; padding:0}
+    nav a{
+      display:inline-block; padding:10px 12px; border-radius:10px; text-decoration:none;
+      color:var(--text); font-weight:600; line-height:1;
+    }
+    nav a:hover{background:#f8fafc}
+    nav a.active{background: var(--primary); color:#fff}
+    .cta{
+      display:flex; align-items:center; gap:10px;
+    }
+    .btn{
+      appearance:none; border:1px solid var(--primary-600); background:var(--primary);
+      color:#fff; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
+      transition:transform .08s ease, box-shadow .2s ease;
+      box-shadow: 0 6px 14px rgba(22,163,74,.25);
+      text-decoration:none;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn--ghost{
+      background:#fff; color:var(--primary-700); border-color:var(--border);
+    }
+    /* Hamburger (بدون JS) */
+    #nav-toggle{display:none}
+    .hamb{display:none; cursor:pointer; padding:8px 10px; border:1px solid var(--border); border-radius:12px}
+    .hamb span{display:block; width:22px; height:2px; background:#0f172a; margin:5px 0}
+    @media (max-width:880px){
+      nav ul{position:fixed; inset-inline:0; top:64px; background:#fff; border-top:1px solid var(--border);
+        flex-direction:column; align-items:stretch; gap:0; padding:8px 12px; display:none}
+      nav li{border-bottom:1px dashed var(--border)}
+      nav a{padding:14px}
+      #nav-toggle:checked ~ nav ul{display:flex}
+      .hamb{display:block}
+      .cta{display:none}
+    }
+  </style>
+
+  <div class="container">
+    <a href="{% url 'home' %}" class="brand">
+      <span class="logo">UW</span>
+      <span>منصة الكهرباء والمياه</span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle" aria-label="فتح القائمة">
+    <label for="nav-toggle" class="hamb" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav>
+      <ul>
+        <li>
+          <a href="{% url 'home' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'home' %}active{% endif %}">
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'owners' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'owners' %}active{% endif %}">
+            الملاك
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'beneficiaries' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'beneficiaries' %}active{% endif %}">
+            المستفيدون
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'services' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'services' %}active{% endif %}">
+            الخدمات
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'support' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'support' %}active{% endif %}">
+            الدعم
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="cta">
+      <a href="#contact" class="btn btn--ghost" role="button">تواصل معنا</a>
+      <a href="{% url 'login' %}" class="btn" role="button">تسجيل الدخول</a>
+    </div>
+  </div>
+</header>
