@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>اختيار الدور</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --bg:#f8fbfc; --card:#fff; --fg:#0f172a; --muted:#6b7280; --accent:#10b981;
+      --ring:#93c5fd; --line:#e5e7eb;
+    }
+    body {
+      margin:0; font-family:system-ui,"Segoe UI",Tahoma,Arial;
+      background:var(--bg); color:var(--fg);
+      display:flex; align-items:center; justify-content:center;
+      height:100vh;
+    }
+    .card {
+      background:var(--card); padding:2rem; border-radius:1rem;
+      box-shadow:0 4px 20px rgba(0,0,0,0.05); text-align:center;
+      width:100%; max-width:400px;
+    }
+    h1 { margin-bottom:1rem; color:var(--accent); }
+    p { margin-bottom:2rem; color:var(--muted); }
+    .btn {
+      display:block; padding:1rem; margin:0.5rem 0;
+      border:none; border-radius:0.75rem; font-size:1.1rem;
+      font-weight:600; cursor:pointer;
+      background:var(--accent); color:white;
+      transition:background 0.2s ease;
+      text-decoration:none;
+    }
+    .btn:hover { background:#059669; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>اختر دورك</h1>
+    <p>فضلاً اختر إذا كنت مستفيد أو مالك للمتابعة</p>
+    <a href="{% url 'services:beneficiary' %}" class="btn">مستفيد</a>
+    <a href="{% url 'services:owner' %}" class="btn">مالك</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>اختيار الدور</title>
+  <style>
+    body{background:#f6faf9;font-family:system-ui,Tahoma,Arial;margin:0}
+    .wrap{max-width:640px;margin:40px auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    h1{margin:0 0 16px;color:#0f5132;text-align:center}
+    .card{border:1px solid #e5e7eb;border-radius:14px;padding:16px;background:#f8fffb}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+    .option{border:1px solid #e5e7eb;border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:#fff}
+    .option:hover{border-color:#10b981;box-shadow:0 0 0 3px #bbf7d0}
+    .btn{width:100%;margin-top:16px;padding:12px;border:0;border-radius:12px;background:#10b981;color:#fff;font-weight:700;cursor:pointer}
+    .muted{color:#64748b;font-size:13px;margin-top:8px;text-align:center}
+    .row{display:grid;grid-template-columns:140px 1fr;gap:8px;margin:6px 0;color:#0f172a}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+{% include 'header.html' %}
+
+<div class="wrap">
+  <h1>اختيار الدور</h1>
+
+  <div class="card">
+    <div class="row"><strong>الاسم:</strong> <span>{{ customer.full_name|default:"-" }}</span></div>
+    <div class="row"><strong>رقم الحساب:</strong> <span>{{ customer.account_no|default:"-" }}</span></div>
+    <div class="row"><strong>رقم الهوية:</strong> <span>{{ customer.national_id|default:"-" }}</span></div>
+    <div class="row"><strong>رقم الجوال:</strong> <span>{{ customer.mobile|default:"-" }}</span></div>
+  </div>
+
+  <form method="post" style="margin-top:16px">
+    {% csrf_token %}
+    <div class="grid">
+      <button class="option" type="submit" name="role" value="beneficiary">
+        <div style="font-size:18px;font-weight:800;color:#065f46">مستفيد</div>
+        <div class="muted">سكان/مشترك</div>
+      </button>
+      <button class="option" type="submit" name="role" value="owner">
+        <div style="font-size:18px;font-weight:800;color:#065f46">مالك</div>
+        <div class="muted">مالك عقار/وحدة</div>
+      </button>
+    </div>
+
+    <p class="muted">اختر نوع المستخدم للمتابعة إلى صفحة الخدمات.</p>
+  </form>
+</div>
+
+{% include 'footer.html' %}
+</body>
+</html>

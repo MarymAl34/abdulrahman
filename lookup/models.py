@@ -1,9 +1,12 @@
+# lookup/models.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 from django.conf import settings
 
-# مدققات بسيطة (اختيارية)
+# ------------------------------
+# Validators
+# ------------------------------
 ksa_id_validator = RegexValidator(
     r"^\d{10}$",
     _("رقم الهوية يجب أن يكون 10 أرقام."),
@@ -16,6 +19,46 @@ phone_validator = RegexValidator(
 )
 
 
+# ------------------------------
+# مصدر البيانات (بعد استيراد الإكسل)
+# ------------------------------
+class Customer(models.Model):
+    full_name   = models.CharField(_("الاسم"), max_length=255, blank=True)
+    meter_no    = models.CharField(_("رقم العداد"), max_length=50, blank=True, db_index=True)
+    account_no  = models.CharField(_("رقم الحساب"), max_length=50, blank=True, db_index=True)
+    national_id = models.CharField(
+        _("رقم الهوية"),
+        max_length=10, blank=True, db_index=True,
+        validators=[ksa_id_validator]
+    )
+    mobile      = models.CharField(
+        _("رقم الجوال"),
+        max_length=15, blank=True, db_index=True,
+        validators=[phone_validator]
+    )
+    unit_code   = models.CharField(_("كود الوحدة"), max_length=50, blank=True, db_index=True)
+    email       = models.EmailField(_("البريد الإلكتروني"), blank=True)
+
+    class Meta:
+        verbose_name = _("عميل")
+        verbose_name_plural = _("العملاء")
+        ordering = ["full_name", "account_no"]
+        indexes = [
+            models.Index(fields=["meter_no"]),
+            models.Index(fields=["account_no"]),
+            models.Index(fields=["national_id"]),
+            models.Index(fields=["mobile"]),
+            models.Index(fields=["unit_code"]),
+        ]
+        # لا نفرض فريدًا لتجنّب مشاكل التكرار الوارد من الإكسل
+
+    def __str__(self):
+        return self.full_name or self.account_no or self.national_id or _("عميل")
+
+
+# ------------------------------
+# سجل الاستعلامات/التحديثات
+# ------------------------------
 class LookupHistory(models.Model):
     class QueryType(models.TextChoices):
         METER = "meter", _("رقم العداد")
@@ -23,6 +66,8 @@ class LookupHistory(models.Model):
         NATIONAL = "national", _("رقم الهوية")
         PHONE = "phone", _("رقم الجوال")
         UNIT = "unit", _("كود الوحدة")
+        EMAIL = "email", _("البريد الإلكتروني")
+        NAME = "name", _("الاسم")
         UNKNOWN = "unknown", _("غير محدد")
 
     # مَن نفّذ العملية (اختياري)
@@ -46,7 +91,7 @@ class LookupHistory(models.Model):
         max_length=100
     )
 
-    # لقطة من الحقول المُرسلة في النموذج (اختيارية)
+    # لقطة من الحقول المُرسلة (اختياري)
     full_name = models.CharField(_("الاسم"), max_length=120, blank=True)
     meter_number = models.CharField(_("رقم العداد"), max_length=50, blank=True)
     account_number = models.CharField(_("رقم الحساب"), max_length=50, blank=True)
@@ -103,9 +148,53 @@ class LookupHistory(models.Model):
     @property
     def masked_value(self) -> str:
         """إخفاء جزء من القيم الحساسة عند العرض."""
-        v = self.query_value or ""
+        v = (self.query_value or "").strip()
         if self.query_type in {self.QueryType.PHONE, self.QueryType.NATIONAL} and len(v) >= 6:
             return f"{v[:3]}***{v[-3:]}"
         elif len(v) > 4:
             return "*" * (len(v) - 4) + v[-4:]
         return v
+
+    # تنظيف بسيط قبل الحفظ
+    def clean(self):
+        # تطبيع مسافات
+        if self.query_value:
+            self.query_value = str(self.query_value).strip()
+
+    # مُساعِد لتسجيل السجل من أي فيو بسهولة
+    @classmethod
+    def log_lookup(
+        cls,
+        *,
+        user=None,
+        query_type: str,
+        query_value: str,
+        form_snapshot: dict | None = None,
+        result_found: bool = False,
+        action: str = "استعلام",
+        message: str = "",
+        ip_address: str | None = None,
+        user_agent: str = "",
+    ):
+        data = {
+            "user": user,
+            "query_type": query_type or cls.QueryType.UNKNOWN,
+            "query_value": (query_value or "").strip(),
+            "result_found": result_found,
+            "action": action or "",
+            "message": message or "",
+            "ip_address": ip_address,
+            "user_agent": user_agent or "",
+        }
+        # لقطة من الحقول إن توفرت
+        form_snapshot = form_snapshot or {}
+        data.update({
+            "full_name": form_snapshot.get("full_name", "")[:120],
+            "meter_number": form_snapshot.get("meter_no") or form_snapshot.get("meter_number", ""),
+            "account_number": form_snapshot.get("account_no") or form_snapshot.get("account_number", ""),
+            "national_id": form_snapshot.get("national_id", ""),
+            "phone": form_snapshot.get("mobile") or form_snapshot.get("phone", ""),
+            "unit_code": form_snapshot.get("unit_code", ""),
+            "email": form_snapshot.get("email", ""),
+        })
+        return cls.objects.create(**data)
