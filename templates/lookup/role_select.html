@@ -4,51 +4,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>اختيار الدور</title>
+  <title>اختيار المستخدم</title>
   <style>
-    body{background:#f6faf9;font-family:system-ui,Tahoma,Arial;margin:0}
-    .wrap{max-width:640px;margin:40px auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
-    h1{margin:0 0 16px;color:#0f5132;text-align:center}
-    .card{border:1px solid #e5e7eb;border-radius:14px;padding:16px;background:#f8fffb}
+    :root{
+      --bg:#f6faf9; --card:#fff; --line:#e5e7eb; --fg:#0f172a;
+      --accent:#10b981; --accent2:#34d399; --muted:#64748b; --ring:#93c5fd;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Tahoma,Arial}
+    .wrap{max-width:720px;margin:40px auto;background:#fff;border:1px solid var(--line);
+      border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .muted{color:var(--muted);font-size:13px}
+    .card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#f8fffb}
+    .row{display:grid;grid-template-columns:160px 1fr;gap:10px;margin:6px 0}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
-    .option{border:1px solid #e5e7eb;border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:#fff}
-    .option:hover{border-color:#10b981;box-shadow:0 0 0 3px #bbf7d0}
-    .btn{width:100%;margin-top:16px;padding:12px;border:0;border-radius:12px;background:#10b981;color:#fff;font-weight:700;cursor:pointer}
-    .muted{color:#64748b;font-size:13px;margin-top:8px;text-align:center}
-    .row{display:grid;grid-template-columns:140px 1fr;gap:8px;margin:6px 0;color:#0f172a}
-    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      .row{grid-template-columns:120px 1fr}
+    }
+    .option{
+      border:1px solid var(--line); border-radius:14px; padding:18px; text-align:center; cursor:pointer;
+      background:#fff; transition:.15s; width:100%;
+    }
+    .option:focus-visible{outline:none; border-color:var(--ring); box-shadow:0 0 0 3px rgba(147,197,253,.35)}
+    .option:hover{border-color:var(--accent); box-shadow:0 0 0 3px #bbf7d0}
+    .opt-title{font-size:18px;font-weight:800;color:#065f46}
+    .btns{display:flex;gap:10px;justify-content:space-between;margin-top:16px}
+    .btn{padding:12px 16px;border:0;border-radius:12px;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;flex:1}
+    .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--fg);min-width:120px}
+    .msgs{margin:12px 0 14px;list-style:none;padding:0}
+    .msg{padding:10px 12px;border-radius:10px;border:1px solid var(--line);margin:8px 0;font-size:14px;background:#ecfdf5}
+    .msg.error{background:#fef2f2;border-color:#fecaca}
+    .msg.warning{background:#fffbeb;border-color:#fde68a}
   </style>
 </head>
 <body>
-{% include 'header.html' %}
 
 <div class="wrap">
-  <h1>اختيار الدور</h1>
+  {% if messages %}
+    <ul class="msgs">
+      {% for m in messages %}
+        <li class="msg {% if 'error' in m.tags %}error{% elif 'warning' in m.tags %}warning{% endif %}">{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
   <div class="card">
     <div class="row"><strong>الاسم:</strong> <span>{{ customer.full_name|default:"-" }}</span></div>
     <div class="row"><strong>رقم الحساب:</strong> <span>{{ customer.account_no|default:"-" }}</span></div>
     <div class="row"><strong>رقم الهوية:</strong> <span>{{ customer.national_id|default:"-" }}</span></div>
     <div class="row"><strong>رقم الجوال:</strong> <span>{{ customer.mobile|default:"-" }}</span></div>
+    {% if customer.email %}
+      <div class="row"><strong>البريد الإلكتروني:</strong> <span>{{ customer.email }}</span></div>
+    {% endif %}
   </div>
 
-  <form method="post" style="margin-top:16px">
+  <form method="post" action="" style="margin-top:16px">
     {% csrf_token %}
     <div class="grid">
-      <button class="option" type="submit" name="role" value="beneficiary">
-        <div style="font-size:18px;font-weight:800;color:#065f46">مستفيد</div>
-        <div class="muted">سكان/مشترك</div>
+      <button class="option" type="submit" name="role" value="beneficiary" aria-label="مستفيد">
+        <div class="opt-title">مستفيد</div>
+        <div class="muted">ساكن/مشترك</div>
       </button>
-      <button class="option" type="submit" name="role" value="owner">
-        <div style="font-size:18px;font-weight:800;color:#065f46">مالك</div>
+
+      <button class="option" type="submit" name="role" value="owner" aria-label="مالك">
+        <div class="opt-title">مالك</div>
         <div class="muted">مالك عقار/وحدة</div>
       </button>
     </div>
 
-    <p class="muted">اختر نوع المستخدم للمتابعة إلى صفحة الخدمات.</p>
+    <div class="btns">
+      <a class="btn btn-ghost" href="{% url 'lookup:home' %}">رجوع</a>
+      <button class="btn btn-primary" type="button" onclick="history.back()">تعديل الاختيار لاحقًا</button>
+    </div>
   </form>
 </div>
 
-{% include 'footer.html' %}
 </body>
 </html>

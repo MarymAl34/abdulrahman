@@ -1,112 +1,144 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>استدعاء البيانات</title>
-    <style>
-        :root {
-            --bg: #f8fbfc;
-            --card: #fff;
-            --fg: #0f172a;
-            --muted: #6b7280;
-            --accent: #10b981;
-            --accent2: #34d399;
-            --ring: #93c5fd;
-            --line: #e5e7eb;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: system-ui, "Segoe UI", Tahoma, Arial;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 0;
-            color: var(--fg);
-        }
-        .container {
-            max-width: 450px;
-            margin: 50px auto;
-            background: var(--card);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            padding: 30px;
-            border: 1px solid var(--line);
-        }
-        h2 {
-            text-align: center;
-            color: var(--accent);
-            font-size: 24px;
-            margin-bottom: 25px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--fg);
-            font-weight: 600;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            margin-bottom: 15px;
-            font-size: 15px;
-            background: #fff;
-            outline: none;
-            transition: .15s;
-        }
-        input:focus {
-            border-color: var(--ring);
-            box-shadow: 0 0 0 3px rgba(147,197,253,0.35);
-        }
-        .btn {
-            width: 100%;
-            padding: 12px 16px;
-            background: linear-gradient(180deg, var(--accent2), var(--accent));
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .btn:hover { filter: brightness(1.05); }
-        .note { font-size: 12px; color: var(--muted); margin-top: -10px; margin-bottom: 15px; }
-        .ltr { direction:ltr; text-align:left; }
-    </style>
+  <meta charset="UTF-8">
+  <title>استدعاء البيانات</title>
+  <style>
+    :root {
+      --bg:#f8fbfc; --card:#fff; --fg:#0f172a; --muted:#6b7280;
+      --accent:#10b981; --accent2:#34d399; --ring:#93c5fd; --line:#e5e7eb;
+      --warn:#f59e0b; --err:#ef4444; --ok:#10b981;
+    }
+    *{box-sizing:border-box}
+    body{font-family:system-ui,"Segoe UI",Tahoma,Arial;background:var(--bg);margin:0;color:var(--fg)}
+    .container{max-width:560px;margin:48px auto;background:var(--card);border:1px solid var(--line);
+      border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:28px}
+    h2{margin:0 0 6px;font-size:24px;color:var(--accent);text-align:center}
+    .sub{margin:0 0 18px;text-align:center;color:var(--muted);font-size:13px}
+    label{display:block;margin:10px 0 6px;font-weight:600;font-size:14px}
+    input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+      font-size:15px;background:#fff;outline:none;transition:.15s;margin-bottom:10px}
+    input:focus{border-color:var(--ring);box-shadow:0 0 0 3px rgba(147,197,253,.35)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{width:100%;padding:12px 16px;background:linear-gradient(180deg,var(--accent2),var(--accent));
+      color:#fff;font-size:16px;font-weight:700;border:none;border-radius:12px;cursor:pointer}
+    .btn:hover{filter:brightness(1.05)}
+    .note{font-size:12px;color:var(--muted);margin:6px 0 14px}
+    .ltr{direction:ltr;text-align:left}
+    .msgs{margin:12px 0 14px;list-style:none;padding:0}
+    .msg{padding:10px 12px;border-radius:10px;border:1px solid var(--line);margin:8px 0;font-size:14px}
+    .msg.warn{background:#fffbeb;border-color:#fde68a}
+    .msg.err{background:#fef2f2;border-color:#fecaca}
+    .msg.ok{background:#ecfdf5;border-color:#bbf7d0}
+    /* نتائج متعددة */
+    .results{margin-top:18px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .results header{padding:10px 14px;background:#f9fafb;border-bottom:1px solid var(--line);font-weight:700}
+    .item{display:grid;grid-template-columns:1.2fr .9fr .9fr 1fr auto;gap:10px;align-items:center;
+      padding:10px 12px;border-top:1px solid var(--line)}
+    .item:first-child{border-top:none}
+    .mini{font-size:12px;color:var(--muted)}
+    .btn-mini{padding:8px 12px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer}
+    .help{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>استدعاء البيانات</h2>
-    <form method="POST" novalidate>
-        {% csrf_token %}
+  <h2>استدعاء البيانات</h2>
+  <p class="sub">عبّئ أي حقل واحد على الأقل. إن لم نجد تطابقًا سنُكمل بالبيانات المُدخلة.</p>
 
-        <label for="full_name">الاسم</label>
-        <input type="text" id="full_name" name="full_name" placeholder="الاسم الثلاثي" required value="{{ request.POST.full_name|default:'' }}">
+  <!-- رسائل Django -->
+  {% if messages %}
+    <ul class="msgs">
+      {% for m in messages %}
+        <li class="msg {% if m.tags == 'error' %}err{% elif 'warning' in m.tags %}warn{% else %}ok{% endif %}">
+          {{ m }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
+  <form method="post" action="" autocomplete="off" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="action" value="lookup">
+
+    <label for="full_name">الاسم</label>
+    <input id="full_name" name="full_name" type="text" placeholder="الاسم الثلاثي"
+           value="{{ data.full_name|default:'' }}">
+
+    <div class="row">
+      <div>
         <label for="meter_number">رقم العداد</label>
-        <input type="text" id="meter_number" name="meter_number" required value="{{ request.POST.meter_number|default:'' }}">
-
+        <input id="meter_number" name="meter_number" type="text"
+               inputmode="numeric" class="ltr"
+               value="{{ data.meter_number|default:'' }}">
+      </div>
+      <div>
         <label for="account_number">رقم الحساب</label>
-        <input type="text" id="account_number" name="account_number" required value="{{ request.POST.account_number|default:'' }}">
+        <input id="account_number" name="account_number" type="text"
+               inputmode="numeric" class="ltr"
+               value="{{ data.account_number|default:'' }}">
+      </div>
+    </div>
 
+    <div class="row">
+      <div>
         <label for="national_id">رقم الهوية</label>
-        <input type="text" id="national_id" name="national_id" required value="{{ request.POST.national_id|default:'' }}">
-
+        <input id="national_id" name="national_id" type="text"
+               inputmode="numeric" maxlength="10" class="ltr"
+               placeholder="10 أرقام"
+               value="{{ data.national_id|default:'' }}">
+        <div class="mini">يجب أن يكون 10 أرقام إذا تم إدخاله.</div>
+      </div>
+      <div>
         <label for="phone">رقم الجوال</label>
-        <input type="text" id="phone" name="phone" class="ltr" placeholder="0551234567" required value="{{ request.POST.phone|default:'' }}">
+        <input id="phone" name="phone" type="text" class="ltr"
+               inputmode="tel" placeholder="0551234567"
+               value="{{ data.phone|default:'' }}">
+      </div>
+    </div>
 
+    <div class="row">
+      <div>
         <label for="unit_code">كود الوحدة</label>
-        <input type="text" id="unit_code" name="unit_code" required value="{{ request.POST.unit_code|default:'' }}">
+        <input id="unit_code" name="unit_code" type="text"
+               value="{{ data.unit_code|default:'' }}">
+      </div>
+      <div>
+        <label for="email">البريد الإلكتروني <span class="mini">(اختياري)</span></label>
+        <input id="email" name="email" type="email"
+               value="{{ data.email|default:'' }}">
+      </div>
+    </div>
 
-        <label for="email">البريد الإلكتروني</label>
-        <input type="email" id="email" name="email" value="{{ request.POST.email|default:'' }}">
-        <div class="note">اختياري</div>
+    <div class="note">ملاحظة: بإمكانك تعبئة معرّف واحد فقط (مثل رقم العداد أو الهوية) للبحث.</div>
 
-        <button type="submit" class="btn">استدعاء البيانات</button>
-    </form>
+    <button type="submit" class="btn">استدعاء البيانات</button>
+  </form>
+
+  <!-- نتائج متعددة -->
+  {% if results %}
+    <div class="results">
+      <header>نتائج متعددة — اختر السجل الصحيح</header>
+      {% for c in results %}
+        <div class="item">
+          <div><strong>{{ c.full_name }}</strong><div class="mini">{{ c.email }}</div></div>
+          <div>الحساب: <span class="mini">{{ c.account_no }}</span></div>
+          <div>الهوية: <span class="mini">{{ c.national_id }}</span></div>
+          <div>الجوال: <span class="mini">{{ c.mobile }}</span></div>
+          <div>
+            <form method="post" action="">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="select">
+              <input type="hidden" name="customer_id" value="{{ c.id }}">
+              <button class="btn-mini" type="submit">اختيار</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="help">إن لم يظهر سجلك، عدِّل المعطيات وأعد البحث.</div>
+  {% endif %}
 </div>
 
 </body>

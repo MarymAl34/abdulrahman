@@ -1,0 +1,95 @@
+<!-- templates/lookup/services.html -->
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>الخدمات المتاحة</title>
+  <style>
+    :root{
+      --bg:#f6faf9; --card:#fff; --line:#e5e7eb; --fg:#0f172a;
+      --accent:#10b981; --accent2:#34d399; --muted:#64748b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,"Tajawal","Segoe UI",Arial}
+    .wrap{max-width:900px;margin:28px auto;padding:0 14px}
+    .hero{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+    .row{display:grid;grid-template-columns:140px 1fr;gap:10px;margin:6px 0}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:#e7f9ee;color:#065f46;border:1px solid #bbf7d0;font-weight:800}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr 1fr}}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}.row{grid-template-columns:120px 1fr}}
+    .svc{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-decoration:none;color:inherit;transition:.15s}
+    .svc:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(2,6,23,.06);transform:translateY(-2px)}
+    .svc h3{margin:0 0 6px;font-size:18px}
+    .svc p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+    .bar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:#0f172a}
+    .btn.primary{border-color:var(--accent);background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff}
+    /* رسائل Django */
+    .msgs{margin:12px 0 14px;list-style:none;padding:0}
+    .msg{padding:10px 12px;border-radius:10px;border:1px solid var(--line);margin:8px 0;font-size:14px;background:#ecfdf5}
+    .msg.warning{background:#fffbeb;border-color:#fde68a}
+    .msg.error{background:#fef2f2;border-color:#fecaca}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    {% if messages %}
+      <ul class="msgs">
+        {% for m in messages %}
+          <li class="msg {% if 'error' in m.tags %}error{% elif 'warning' in m.tags %}warning{% endif %}">{{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- بطاقة معلومات مختصرة + شارة الدور -->
+    <section class="hero" aria-label="معلومات العميل">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div>
+          <h2 style="margin:0 0 8px">الخدمات المتاحة</h2>
+        </div>
+        <span class="badge" title="الدور المختار">
+          الدور: {% if role == 'beneficiary' %}مستفيد{% else %}مالك{% endif %}
+        </span>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="row"><strong>الاسم:</strong> <span>{{ customer.full_name|default:"-" }}</span></div>
+        <div class="row"><strong>الجوال:</strong> <span>{{ customer.mobile|default:"-" }}</span></div>
+        <div class="row"><strong>رقم الهوية:</strong> <span>{{ customer.national_id|default:"-" }}</span></div>
+        <div class="row"><strong>رقم الحساب:</strong> <span>{{ customer.account_no|default:"-" }}</span></div>
+      </div>
+    </section>
+
+    <!-- شبكة الخدمات -->
+    <div class="grid" role="list" aria-label="قائمة الخدمات">
+      {% for s in services %}
+        <a class="svc" role="listitem" href="{% url 'lookup:service_request' key=s.key %}" aria-label="{{ s.title }}">
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.desc }}</p>
+        </a>
+      {% empty %}
+        <div class="svc">
+          <h3>لا توجد خدمات</h3>
+          <p class="muted">يرجى المحاولة لاحقًا.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="bar">
+      <a class="btn" href="{% url 'lookup:choose_role' %}">تغيير الدور</a>
+      <div style="display:flex;gap:8px">
+        <a class="btn" href="{% url 'lookup:home' %}">رجوع</a>
+        <a class="btn primary" href="{% url 'lookup:services' %}">تحديث</a>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:10px">
+      ملاحظة: كل طلب يُنشئ <b>إشعارًا داخليًا</b> ورقمًا مرجعيًا يُرسل لك عبر <b>SMS/Email</b>.
+    </p>
+  </div>
+</body>
+</html>

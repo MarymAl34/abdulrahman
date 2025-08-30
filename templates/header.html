@@ -2,52 +2,23 @@
 <header class="topbar" dir="rtl">
   <style>
     :root{
-      --primary:#16a34a; /* أخضر */
-      --primary-600:#16a34a;
-      --primary-700:#15803d;
-      --surface:#ffffff; /* أبيض */
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:#e2e8f0;
+      --primary:#16a34a; --primary-600:#16a34a; --primary-700:#15803d;
+      --surface:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
     }
-    .topbar{
-      position: sticky; top:0; inset-inline:0;
-      background: var(--surface);
-      border-bottom:1px solid var(--border);
-      z-index: 50;
-    }
-    .container{
-      max-width:1200px; margin:auto; padding: 0 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:16px; height:64px;
-    }
+    .topbar{position:sticky; top:0; inset-inline:0; background:var(--surface); border-bottom:1px solid var(--border); z-index:50}
+    .container{max-width:1200px; margin:auto; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; height:64px}
     .brand{display:flex; align-items:center; gap:10px; font-weight:800; color:var(--text); text-decoration:none}
-    .brand .logo{
-      width:36px;height:36px;border-radius:10px; display:grid; place-items:center;
-      background: conic-gradient(from 180deg at 50% 50%, #22c55e, #16a34a, #0ea5a1, #22c55e);
-      color:#fff; font-weight:900;
-      box-shadow: 0 6px 14px rgba(22,163,74,.25);
-    }
+    .brand .logo{width:36px;height:36px;border-radius:10px; display:grid; place-items:center;
+      background:conic-gradient(from 180deg at 50% 50%, #22c55e, #16a34a, #0ea5a1, #22c55e);
+      color:#fff; font-weight:900; box-shadow:0 6px 14px rgba(22,163,74,.25)}
     nav ul{display:flex; align-items:center; gap:14px; list-style:none; margin:0; padding:0}
-    nav a{
-      display:inline-block; padding:10px 12px; border-radius:10px; text-decoration:none;
-      color:var(--text); font-weight:600; line-height:1;
-    }
+    nav a{display:inline-block; padding:10px 12px; border-radius:10px; text-decoration:none; color:var(--text); font-weight:600; line-height:1}
     nav a:hover{background:#f8fafc}
-    nav a.active{background: var(--primary); color:#fff}
-    .cta{
-      display:flex; align-items:center; gap:10px;
-    }
-    .btn{
-      appearance:none; border:1px solid var(--primary-600); background:var(--primary);
-      color:#fff; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
-      transition:transform .08s ease, box-shadow .2s ease;
-      box-shadow: 0 6px 14px rgba(22,163,74,.25);
-      text-decoration:none;
-    }
-    .btn:hover{transform: translateY(-1px)}
-    .btn--ghost{
-      background:#fff; color:var(--primary-700); border-color:var(--border);
-    }
+    nav a.active{background:var(--primary); color:#fff}
+    .cta{display:flex; align-items:center; gap:10px}
+    .btn{appearance:none; border:1px solid var(--primary-600); background:var(--primary); color:#fff; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; transition:transform .08s ease, box-shadow .2s ease; box-shadow:0 6px 14px rgba(22,163,74,.25); text-decoration:none}
+    .btn:hover{transform:translateY(-1px)}
+    .btn--ghost{background:#fff; color:var(--primary-700); border-color:var(--border)}
     /* Hamburger (بدون JS) */
     #nav-toggle{display:none}
     .hamb{display:none; cursor:pointer; padding:8px 10px; border:1px solid var(--border); border-radius:12px}
@@ -64,54 +35,61 @@
   </style>
 
   <div class="container">
-    <a href="{% url 'home' %}" class="brand">
+    <!-- بدّلنا إلى lookup:home -->
+    <a href="{% url 'lookup:home' %}" class="brand">
       <span class="logo">UW</span>
       <span>منصة الكهرباء والمياه</span>
     </a>
 
     <input type="checkbox" id="nav-toggle" aria-label="فتح القائمة">
-    <label for="nav-toggle" class="hamb" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </label>
+    <label for="nav-toggle" class="hamb" aria-hidden="true"><span></span><span></span><span></span></label>
 
     <nav>
       <ul>
         <li>
-          <a href="{% url 'home' %}"
-             class="{% if request.resolver_match and request.resolver_match.url_name == 'home' %}active{% endif %}">
+          <a href="{% url 'lookup:home' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'home' %}active{% endif %}"
+             {% if request.resolver_match and request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
             الرئيسية
           </a>
         </li>
+
+        <!-- اختيار الدور -->
         <li>
-          <a href="{% url 'owners' %}"
-             class="{% if request.resolver_match and request.resolver_match.url_name == 'owners' %}active{% endif %}">
-            الملاك
+          <a href="{% url 'lookup:choose_role' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'choose_role' %}active{% endif %}"
+             {% if request.resolver_match and request.resolver_match.url_name == 'choose_role' %}aria-current="page"{% endif %}>
+            اختيار الدور
           </a>
         </li>
+
+        <!-- الخدمات -->
         <li>
-          <a href="{% url 'beneficiaries' %}"
-             class="{% if request.resolver_match and request.resolver_match.url_name == 'beneficiaries' %}active{% endif %}">
-            المستفيدون
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'services' %}"
-             class="{% if request.resolver_match and request.resolver_match.url_name == 'services' %}active{% endif %}">
+          <a href="{% url 'lookup:services' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'services' %}active{% endif %}"
+             {% if request.resolver_match and request.resolver_match.url_name == 'services' %}aria-current="page"{% endif %}>
             الخدمات
           </a>
         </li>
+
+        <!-- السجل -->
         <li>
-          <a href="{% url 'support' %}"
-             class="{% if request.resolver_match and request.resolver_match.url_name == 'support' %}active{% endif %}">
-            الدعم
+          <a href="{% url 'lookup:history' %}"
+             class="{% if request.resolver_match and request.resolver_match.url_name == 'history' %}active{% endif %}"
+             {% if request.resolver_match and request.resolver_match.url_name == 'history' %}aria-current="page"{% endif %}>
+            السجل
           </a>
         </li>
+
+        <!-- الدعم: رابط داخلي للفوتر بدلاً من عكس URL غير موجود -->
+        <li><a href="#contact">الدعم</a></li>
       </ul>
     </nav>
 
     <div class="cta">
       <a href="#contact" class="btn btn--ghost" role="button">تواصل معنا</a>
-      <a href="{% url 'login' %}" class="btn" role="button">تسجيل الدخول</a>
+      <!-- بدّلنا إلى access:login -->
+      <a href="{% url 'access:login' %}" class="btn" role="button">تسجيل الدخول</a>
     </div>
   </div>
 </header>
